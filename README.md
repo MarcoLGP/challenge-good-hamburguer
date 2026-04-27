@@ -88,7 +88,7 @@ Este projeto foi desenvolvido como um desafio técnico, focando na arquitetura e
 - **Pipeline de CI/CD**: Automação completa de build, testes e deploy utilizando GitHub Actions ou Azure DevOps, com estratégias de Blue/Green Deployment.
 - **Controle de Acesso (RBAC)**: Diferenciação de perfis (ex: Admin vs. Cliente). Atualmente o sistema opera em modelo flat, mas em produção haveria restrições baseadas em roles.
 - **Isolamento de Dados**: Garantir que clientes visualizem apenas seus próprios pedidos (Multi-tenancy) e que administradores tenham visão consolidada.
-- **Paginação de Resultados**: Implementação de paginação (`Skip`/`Take`) nos endpoints de listagem de pedidos para suportar grandes volumes de dados de forma eficiente.
+- **Paginação de Resultados**: Implementação de paginação (`Skip`/`Take`) no endpoint de listagem de pedidos para suportar grandes volumes de dados de forma eficiente.
 - **Gestão de Segredos**: Armazenamento de chaves e conexões em cofres seguros como Azure Key Vault ou HashiCorp Vault.
 
 ---
