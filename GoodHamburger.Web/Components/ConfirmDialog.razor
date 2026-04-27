@@ -1,0 +1,78 @@
+@if (_isOpen)
+{
+    <div class="dialog-backdrop @(_isOpen ? "dialog-backdrop--visible" : "")" @onclick="Cancel">
+        <div class="dialog @(_isOpen ? "dialog--visible" : "")" @onclick:stopPropagation="true" role="dialog" aria-modal="true">
+            <div class="dialog-icon dialog-icon--@IconClass">
+                @Icon
+            </div>
+            <h2 class="dialog-title">@Title</h2>
+            <p class="dialog-message">@Message</p>
+            <div class="dialog-actions">
+                <button class="btn btn-ghost" @onclick="Cancel" disabled="@_processing">
+                    Cancelar
+                </button>
+                <button class="btn @ConfirmClass" @onclick="Confirm" disabled="@_processing">
+                    @if (_processing)
+                    {
+                        <span class="spinner spinner--sm"></span>
+                        <span>Processando...</span>
+                    }
+                    else
+                    {
+                        <span>@ConfirmText</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _isOpen;
+    private bool _processing;
+    private TaskCompletionSource<bool>? _tcs;
+
+    [Parameter] public string Title { get; set; } = "Confirmar ação";
+    [Parameter] public string Message { get; set; } = "Tem certeza que deseja continuar?";
+    [Parameter] public string ConfirmText { get; set; } = "Confirmar";
+    [Parameter] public string ConfirmClass { get; set; } = "btn-danger";
+    [Parameter] public string Icon { get; set; } = "⚠️";
+    [Parameter] public string IconClass { get; set; } = "warning";
+
+    public Task<bool> ShowAsync(
+        string title, string message,
+        string confirmText = "Confirmar",
+        string confirmClass = "btn-danger",
+        string icon = "🗑️",
+        string iconClass = "danger")
+    {
+        Title       = title;
+        Message     = message;
+        ConfirmText = confirmText;
+        ConfirmClass = confirmClass;
+        Icon        = icon;
+        IconClass   = iconClass;
+
+        _tcs = new TaskCompletionSource<bool>();
+        _isOpen = true;
+        _processing = false;
+        StateHasChanged();
+        return _tcs.Task;
+    }
+
+    private void Confirm()
+    {
+        _processing = true;
+        StateHasChanged();
+        _tcs?.SetResult(true);
+        _isOpen = false;
+        _processing = false;
+    }
+
+    private void Cancel()
+    {
+        _tcs?.SetResult(false);
+        _isOpen = false;
+        StateHasChanged();
+    }
+}

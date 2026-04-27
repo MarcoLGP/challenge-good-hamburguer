@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: goodhamburger-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: GoodHamburgerDB
+      MYSQL_USER: goodhamburger
+      MYSQL_PASSWORD: goodhamburger
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - goodhamburger-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: GoodHamburger.Api/Dockerfile
+    container_name: goodhamburger-api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=GoodHamburgerDB;User=goodhamburger;Password=goodhamburger;
+    ports:
+      - "5001:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - goodhamburger-network
+
+  web:
+    build:
+      context: .
+      dockerfile: GoodHamburger.Web/Dockerfile
+    container_name: goodhamburger-web
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiBaseUrl=http://api:8080
+    ports:
+      - "5002:8080"   
+    depends_on:
+      - api
+    networks:
+      - goodhamburger-network
+
+networks:
+  goodhamburger-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

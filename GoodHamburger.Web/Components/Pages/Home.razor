@@ -1,0 +1,295 @@
+@page "/"
+@rendermode InteractiveServer
+@inject GoodHamburgerApiClient Api
+@inject NavigationManager Nav
+
+<PageTitle>Good Hamburger — Início</PageTitle>
+
+<!-- ═══ HERO ════════════════════════════════════════════════════════════ -->
+<section class="hero">
+    <!-- Animated background particles -->
+    <div class="hero-bg" aria-hidden="true">
+        <div class="hero-grain"></div>
+        <div class="hero-glow hero-glow--1"></div>
+        <div class="hero-glow hero-glow--2"></div>
+        <div class="hero-glow hero-glow--3"></div>
+    </div>
+
+    <!-- Floating food emojis -->
+    <div class="hero-floats" aria-hidden="true">
+        <span class="float-item float-item--1">🍔</span>
+        <span class="float-item float-item--2">🍟</span>
+        <span class="float-item float-item--3">🥤</span>
+        <span class="float-item float-item--4">🥓</span>
+        <span class="float-item float-item--5">🍳</span>
+        <span class="float-item float-item--6">⭐</span>
+    </div>
+
+    <div class="hero-content">
+        <div class="hero-eyebrow">
+            <span class="eyebrow-dot"></span>
+            <span>O Hambúrguer Perfeito Existe</span>
+        </div>
+
+        <h1 class="hero-title">
+            <span class="hero-title-line">Good</span>
+            <span class="hero-title-line hero-title-line--accent">Hamburger</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            Ingredientes frescos, pão artesanal e carnes selecionadas.<br />
+            O sabor que você merece com a agilidade que você precisa.
+        </p>
+
+        <div class="hero-actions">
+            <a href="/pedidos?new=true" class="btn btn-primary btn-lg hero-btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Fazer Pedido
+            </a>
+            <a href="/cardapio" class="btn btn-outline btn-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Ver Cardápio
+            </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats">
+            <div class="stat-pill">
+                <span class="stat-value">100%</span>
+                <span class="stat-label">Carne Angus</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-pill">
+                <span class="stat-value">Fresco</span>
+                <span class="stat-label">Ingredientes</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-pill">
+                <span class="stat-value">Rápido</span>
+                <span class="stat-label">Delivery</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero-scroll" aria-hidden="true">
+        <div class="scroll-line"></div>
+        <span>scroll</span>
+    </div>
+</section>
+
+<!-- ═══ DISCOUNT COMBOS ══════════════════════════════════════════════════ -->
+<section class="section section--dark">
+    <div class="section-container">
+        <div class="section-header">
+            <p class="section-eyebrow">Combos especiais</p>
+            <h2 class="section-title">Economize combinando</h2>
+            <p class="section-subtitle">Descontos aplicados automaticamente no momento do pedido</p>
+        </div>
+
+        <div class="combo-grid">
+            <div class="combo-card combo-card--bronze">
+                <div class="combo-badge">10% OFF</div>
+                <div class="combo-items">
+                    <span class="combo-emoji">🍔</span>
+                    <span class="combo-plus">+</span>
+                    <span class="combo-emoji">🍟</span>
+                </div>
+                <h3 class="combo-name">Combo Clássico</h3>
+                <p class="combo-desc">Sanduíche + Batata Frita</p>
+                <div class="combo-example">
+                    Ex: X Burger + Batata → <strong>R$ 6,30</strong>
+                </div>
+            </div>
+
+            <div class="combo-card combo-card--silver">
+                <div class="combo-badge">15% OFF</div>
+                <div class="combo-items">
+                    <span class="combo-emoji">🍔</span>
+                    <span class="combo-plus">+</span>
+                    <span class="combo-emoji">🥤</span>
+                </div>
+                <h3 class="combo-name">Combo Refresco</h3>
+                <p class="combo-desc">Sanduíche + Refrigerante</p>
+                <div class="combo-example">
+                    Ex: X Burger + Soda → <strong>R$ 6,37</strong>
+                </div>
+            </div>
+
+            <div class="combo-card combo-card--gold">
+                <div class="combo-badge combo-badge--featured">20% OFF</div>
+                <div class="combo-star" aria-hidden="true">⭐</div>
+                <div class="combo-items">
+                    <span class="combo-emoji">🍔</span>
+                    <span class="combo-plus">+</span>
+                    <span class="combo-emoji">🍟</span>
+                    <span class="combo-plus">+</span>
+                    <span class="combo-emoji">🥤</span>
+                </div>
+                <h3 class="combo-name">Combo Trio</h3>
+                <p class="combo-desc">Sanduíche + Batata + Refrigerante</p>
+                <div class="combo-example">
+                    A melhor escolha: <strong>Economia máxima</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ MENU PREVIEW ════════════════════════════════════════════════════ -->
+<section class="section">
+    <div class="section-container">
+        <div class="section-header">
+            <p class="section-eyebrow">Cardápio</p>
+            <h2 class="section-title">O que temos hoje</h2>
+        </div>
+
+        @if (_loadingMenu)
+        {
+            <div class="menu-preview-grid">
+                @for (int i = 0; i < 5; i++)
+                {
+                    <div class="skeleton-card"></div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="menu-preview-grid">
+                @foreach (var item in _menuItems)
+                {
+                    <div class="menu-preview-card">
+                        <div class="menu-preview-icon">@GetItemEmoji(item.Category)</div>
+                        <div class="menu-preview-info">
+                            <span class="menu-preview-cat">@GetCategoryLabel(item.Category)</span>
+                            <h3 class="menu-preview-name">@item.Name</h3>
+                        </div>
+                        <span class="menu-preview-price">R$ @item.Price.ToString("F2")</span>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="section-cta">
+            <a href="/cardapio" class="btn btn-outline">Ver cardápio completo →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ RECENT ORDERS ════════════════════════════════════════════════════ -->
+@if (_recentOrders.Count > 0)
+{
+    <section class="section section--dark">
+        <div class="section-container">
+            <div class="section-header">
+                <p class="section-eyebrow">Pedidos recentes</p>
+                <h2 class="section-title">Atividade da lanchonete</h2>
+            </div>
+
+            <div class="recent-orders-list">
+                @foreach (var order in _recentOrders)
+                {
+                    <div class="recent-order-row">
+                        <div class="recent-order-id">
+                            <span class="order-id-label">#</span>
+                            <span class="order-id-val">@order.Id.ToString()[..8]…</span>
+                        </div>
+                        <div class="recent-order-items">
+                            @string.Join(" + ", order.Items.Select(i => i.Name))
+                        </div>
+                        @if (order.DiscountRate > 0)
+                        {
+                            <span class="badge badge-success">@((order.DiscountRate * 100).ToString("F0"))% OFF</span>
+                        }
+                        <div class="recent-order-total">R$ @order.Total.ToString("F2")</div>
+                        <div class="recent-order-date">@order.CreatedAt.LocalDateTime.ToString("dd/MM HH:mm")</div>
+                    </div>
+                }
+            </div>
+
+            <div class="section-cta">
+                <a href="/pedidos" class="btn btn-outline">Gerenciar todos os pedidos →</a>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ═══ OUR DIFFERENTIALS ══════════════════════════════════════════════ -->
+<section class="section">
+    <div class="section-container">
+        <div class="section-header">
+            <p class="section-eyebrow">Por que nós?</p>
+            <h2 class="section-title">O segredo do nosso sabor</h2>
+        </div>
+
+        <div class="tech-grid">
+            <div class="tech-card">
+                <span class="tech-icon">🥩</span>
+                <h3 class="tech-name">Carne Selecionada</h3>
+                <p class="tech-desc">Utilizamos apenas cortes premium de procedência garantida, moídos diariamente para manter o frescor e o suco.</p>
+            </div>
+            <div class="tech-card">
+                <span class="tech-icon">🍞</span>
+                <h3 class="tech-name">Pão de Brioche</h3>
+                <p class="tech-desc">Nossos pães são assados diariamente em nossa padaria própria, garantindo aquela maciez e aroma irresistíveis.</p>
+            </div>
+            <div class="tech-card">
+                <span class="tech-icon">🧀</span>
+                <h3 class="tech-name">Queijos Artesanais</h3>
+                <p class="tech-desc">Trabalhamos com pequenos produtores para oferecer queijos que derretem na medida certa e elevam o sabor.</p>
+            </div>
+            <div class="tech-card">
+                <span class="tech-icon">🛵</span>
+                <h3 class="tech-name">Entrega Expressa</h3>
+                <p class="tech-desc">Nossa logística é otimizada para que seu hambúrguer chegue quentinho e montado perfeitamente na sua porta.</p>
+            </div>
+            <div class="tech-card">
+                <span class="tech-icon">🥗</span>
+                <h3 class="tech-name">Horta Própria</h3>
+                <p class="tech-desc">Alface crocante e tomates suculentos colhidos no dia, trazendo o frescor da natureza para dentro do seu sanduíche.</p>
+            </div>
+            <div class="tech-card">
+                <span class="tech-icon">🥤</span>
+                <h3 class="tech-name">Bebidas Geladas</h3>
+                <p class="tech-desc">Uma seleção rigorosa de bebidas servidas na temperatura ideal para acompanhar sua experiência gastronômica.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<MenuItemDto> _menuItems = [];
+    private List<OrderDto>    _recentOrders = [];
+    private int  _totalOrders;
+    private bool _loadingMenu = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var menuTask  = Api.GetMenuAsync();
+        var ordersTask = Api.GetOrdersAsync();
+
+        await Task.WhenAll(menuTask, ordersTask);
+
+        _menuItems     = menuTask.Result;
+        var allOrders  = ordersTask.Result;
+        _totalOrders   = allOrders.Count;
+        _recentOrders  = allOrders.Take(5).ToList();
+        _loadingMenu   = false;
+    }
+
+    private static string GetItemEmoji(string category) => category switch
+    {
+        "Sandwich" => "🍔",
+        "Side"     => "🍟",
+        "Drink"    => "🥤",
+        _          => "🍽️"
+    };
+
+    private static string GetCategoryLabel(string category) => category switch
+    {
+        "Sandwich" => "Sanduíche",
+        "Side"     => "Acompanhamento",
+        "Drink"    => "Bebida",
+        _          => category
+    };
+}

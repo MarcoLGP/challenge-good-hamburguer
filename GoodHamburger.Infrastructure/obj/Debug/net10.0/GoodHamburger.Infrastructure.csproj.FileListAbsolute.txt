@@ -1,0 +1,17 @@
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Infrastructure.deps.json
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Infrastructure.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Infrastructure.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Application.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Domain.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Application.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\bin\Debug\net10.0\GoodHamburger.Domain.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.AssemblyInfo.cs
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamb.5C53B714.Up2Date
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\refint\GoodHamburger.Infrastructure.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\GoodHamburger.Infrastructure.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Infrastructure\obj\Debug\net10.0\ref\GoodHamburger.Infrastructure.dll

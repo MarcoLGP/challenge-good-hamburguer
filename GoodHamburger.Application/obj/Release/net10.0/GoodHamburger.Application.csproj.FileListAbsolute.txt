@@ -1,0 +1,15 @@
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\bin\Release\net10.0\GoodHamburger.Application.deps.json
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\bin\Release\net10.0\GoodHamburger.Application.dll
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\bin\Release\net10.0\GoodHamburger.Application.pdb
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\bin\Release\net10.0\GoodHamburger.Domain.dll
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\bin\Release\net10.0\GoodHamburger.Domain.pdb
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.csproj.AssemblyReference.cache
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.AssemblyInfoInputs.cache
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.AssemblyInfo.cs
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.csproj.CoreCompileInputs.cache
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamb.630BA540.Up2Date
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.dll
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\refint\GoodHamburger.Application.dll
+c:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\GoodHamburger.Application.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Application\obj\Release\net10.0\ref\GoodHamburger.Application.dll

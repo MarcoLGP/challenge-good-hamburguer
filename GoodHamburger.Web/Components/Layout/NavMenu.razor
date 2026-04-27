@@ -1,0 +1,206 @@
+@rendermode InteractiveServer
+@inject NavigationManager Nav
+@inject AuthService Auth
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<header class="topnav @(_scrolled ? "topnav--scrolled" : "")">
+    <div class="topnav-container">
+
+        <!-- Brand -->
+        <a href="/" class="topnav-brand">
+            <div class="brand-logo">
+                <span class="brand-burger">🍔</span>
+            </div>
+            <div class="brand-wordmark">
+                <span class="brand-name">Good</span>
+                <span class="brand-name brand-name--accent">Hamburger</span>
+            </div>
+        </a>
+
+        <!-- Nav links -->
+        <nav class="topnav-links" role="navigation" aria-label="Menu principal">
+            <NavLink href="/cardapio" class="topnav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <span>Cardápio</span>
+            </NavLink>
+            <NavLink href="/pedidos" class="topnav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span>Pedidos</span>
+            </NavLink>
+        </nav>
+
+        <!-- Auth / CTA -->
+        <div class="topnav-cta">
+            @if (_isAuthenticated)
+            {
+                <div class="user-menu">
+                    <button type="button" class="user-menu-btn" @onclick="ToggleUserMenu" @onclick:stopPropagation="true">
+                        <div class="user-avatar">
+                            <span>@GetUserInitial()</span>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    @if (_userMenuOpen)
+                    {
+                        <div class="user-dropdown">
+                            <div class="user-dropdown-header">
+                                <span class="user-dropdown-label">Logado como</span>
+                                <span class="user-dropdown-email">@_userEmail</span>
+                            </div>
+                            <div class="user-dropdown-divider"></div>
+                            <button type="button" class="user-dropdown-item" @onclick="Logout">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                Sair
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="auth-buttons">
+                    <a href="/login" class="btn btn-ghost btn-sm">Entrar</a>
+                    <a href="/register" class="btn btn-primary btn-sm topnav-cta-btn">Criar Conta</a>
+                </div>
+            }
+        </div>
+
+        <!-- Mobile menu toggle -->
+        <button type="button" class="topnav-toggle @(_mobileOpen ? "is-open" : "")" @onclick="ToggleMobile" @onclick:stopPropagation="true" aria-label="Menu" aria-expanded="@_mobileOpen">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+
+</header>
+ 
+@if (_mobileOpen)
+{
+    <div class="topnav-mobile">
+        <button type="button" class="mobile-menu-close" @onclick="CloseMobile" aria-label="Fechar menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <NavLink href="/cardapio" class="topnav-mobile-link" @onclick="() => CloseMobile()">Cardápio</NavLink>
+        <NavLink href="/pedidos" class="topnav-mobile-link" @onclick="() => CloseMobile()">Pedidos</NavLink>
+        @if (_isAuthenticated)
+        {
+            <div class="topnav-mobile-divider"></div>
+            <div class="topnav-mobile-user">
+                <div class="user-avatar" style="margin: 0 auto var(--sp-2);">
+                    <span>@GetUserInitial()</span>
+                </div>
+                <span class="user-dropdown-email" style="text-align: center; display: block; margin-bottom: var(--sp-2);">@_userEmail</span>
+                <button class="topnav-mobile-link text-error" @onclick="() => Logout()">Sair</button>
+            </div>
+        }
+        else
+        {
+            <div class="topnav-mobile-divider"></div>
+            <a href="/login" class="topnav-mobile-link" @onclick="CloseMobile">Entrar</a>
+            <a href="/register" class="btn btn-primary w-full mt-2" @onclick="CloseMobile">Criar Conta</a>
+        }
+    </div>
+}
+<div class="mobile-menu-backdrop @(_mobileOpen ? "is-visible" : "")" @onclick="CloseMobile"></div>
+
+@code {
+    private bool _scrolled;
+    private bool _mobileOpen;
+    private bool _userMenuOpen;
+    private bool _isAuthenticated;
+    private string? _userEmail;
+    private DotNetObjectReference<NavMenu>? _objRef;
+
+    protected override void OnInitialized()
+    {
+        Auth.OnAuthStateChanged += OnAuthStateChanged;
+        
+        CheckAuth();
+        
+        _objRef = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            CheckAuth();
+            StateHasChanged();
+            
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.closeNavMenuOnClick = (dotNetHelper) => {
+                    document.addEventListener('click', (e) => {
+                        // Verifica se o clique foi fora do menu dropdown do usuário
+                        const userMenu = document.querySelector('.user-menu');
+                        const userDropdown = document.querySelector('.user-dropdown');
+                        if (userMenu && userDropdown && 
+                            !userMenu.contains(e.target) && 
+                            !userDropdown.contains(e.target)) {
+                            dotNetHelper.invokeMethodAsync('CloseUserMenu');
+                        }
+                    });
+                };
+            ");
+            await JSRuntime.InvokeVoidAsync("closeNavMenuOnClick", _objRef);
+        }
+    }
+
+    public void Dispose()
+    {
+        Auth.OnAuthStateChanged -= OnAuthStateChanged;
+        _objRef?.Dispose();
+    }
+
+    private void OnAuthStateChanged()
+    {
+        CheckAuth();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void CheckAuth()
+    {
+        var isAuth = Auth.IsAuthenticated();
+        var token = Auth.GetAccessToken();
+
+        _isAuthenticated = isAuth && !string.IsNullOrEmpty(token);
+        
+        _userEmail = _isAuthenticated ? Auth.GetUserEmail() ?? "Usuário" : null;
+    }
+
+    private void Logout()
+    {
+        _userMenuOpen = false;
+        _mobileOpen = false;
+        Auth.Logout();
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+
+    private void ToggleMobile() 
+    {
+        _mobileOpen = !_mobileOpen;
+        _userMenuOpen = false;
+        StateHasChanged();
+    }
+    
+    private void CloseMobile() 
+    {
+        _mobileOpen = false;
+        StateHasChanged();
+    }
+    
+    private void ToggleUserMenu() 
+    {
+        _userMenuOpen = !_userMenuOpen;
+        _mobileOpen = false;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void CloseUserMenu()
+    {
+        _userMenuOpen = false;
+        StateHasChanged();
+    }
+
+    private string GetUserInitial() => string.IsNullOrEmpty(_userEmail) ? "U" : _userEmail[..1].ToUpperInvariant();
+}

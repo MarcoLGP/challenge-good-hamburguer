@@ -1,0 +1,11 @@
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\bin\Debug\net10.0\GoodHamburger.Domain.deps.json
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\bin\Debug\net10.0\GoodHamburger.Domain.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\bin\Debug\net10.0\GoodHamburger.Domain.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\GoodHamburger.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\GoodHamburger.Domain.AssemblyInfoInputs.cache
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\GoodHamburger.Domain.AssemblyInfo.cs
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\GoodHamburger.Domain.csproj.CoreCompileInputs.cache
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\GoodHamburger.Domain.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\refint\GoodHamburger.Domain.dll
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\GoodHamburger.Domain.pdb
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Domain\obj\Debug\net10.0\ref\GoodHamburger.Domain.dll

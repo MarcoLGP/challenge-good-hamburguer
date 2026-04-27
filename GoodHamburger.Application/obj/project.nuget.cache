@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "9DiqJ6rzzdg=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\marco\\source\\repos\\Good Hamburguer\\GoodHamburger.Application\\GoodHamburger.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\marco\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

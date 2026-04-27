@@ -1,0 +1,300 @@
+@inject GoodHamburgerApiClient Api
+@inject ToastService Toast
+
+@if (_isOpen)
+{
+    <div class="slide-backdrop @(_isOpen ? "slide-backdrop--visible" : "")" @onclick="Close"></div>
+    <div class="slide-panel @(_isOpen ? "slide-panel--open" : "")" role="dialog" aria-modal="true" aria-labelledby="form-title">
+
+        <!-- Header -->
+        <div class="slide-header">
+            <div>
+                <p class="slide-eyebrow">@(_editingId.HasValue ? "Editar Pedido" : "Novo Pedido")</p>
+                <h2 id="form-title" class="slide-title">@(_editingId.HasValue ? "Atualizar itens" : "Monte seu combo")</h2>
+            </div>
+            <button class="icon-btn" @onclick="Close" aria-label="Fechar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+
+        @if (_error is not null)
+        {
+            <div class="alert alert-error slide-alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>@_error</span>
+            </div>
+        }
+
+        <div class="slide-body">
+            @if (_menuItems.Count == 0)
+            {
+                <div class="slide-loading">
+                    <span class="spinner"></span>
+                    <span>Carregando cardápio...</span>
+                </div>
+            }
+            else
+            {
+                <!-- Sanduíches -->
+                <div class="item-group">
+                    <div class="item-group-header">
+                        <span class="item-group-icon">🍔</span>
+                        <div>
+                            <h3 class="item-group-title">Sanduíche</h3>
+                            <p class="item-group-note">Escolha um (obrigatório)</p>
+                        </div>
+                    </div>
+                    <div class="item-choices">
+                        @foreach (var item in Sandwiches)
+                        {
+                            <button class="item-choice @(SelectedSandwich == item.Code ? "item-choice--selected" : "")"
+                                    @onclick="() => SelectSandwich(item.Code)"
+                                    type="button">
+                                <div class="item-choice-body">
+                                    <span class="item-choice-name">@item.Name</span>
+                                    <span class="item-choice-price">R$ @item.Price.ToString("F2")</span>
+                                </div>
+                                <div class="item-choice-check">
+                                    @if (SelectedSandwich == item.Code)
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    }
+                                </div>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Acompanhamentos -->
+                <div class="item-group">
+                    <div class="item-group-header">
+                        <span class="item-group-icon">🍟</span>
+                        <div>
+                            <h3 class="item-group-title">Acompanhamento</h3>
+                            <p class="item-group-note">Opcional · desconto ao combinar</p>
+                        </div>
+                    </div>
+                    <div class="item-choices">
+                        @foreach (var item in Sides)
+                        {
+                            <button class="item-choice @(SelectedSide == item.Code ? "item-choice--selected" : "")"
+                                    @onclick="() => ToggleSide(item.Code)"
+                                    type="button">
+                                <div class="item-choice-body">
+                                    <span class="item-choice-name">@item.Name</span>
+                                    <span class="item-choice-price">R$ @item.Price.ToString("F2")</span>
+                                </div>
+                                <div class="item-choice-check">
+                                    @if (SelectedSide == item.Code)
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    }
+                                </div>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Bebidas -->
+                <div class="item-group">
+                    <div class="item-group-header">
+                        <span class="item-group-icon">🥤</span>
+                        <div>
+                            <h3 class="item-group-title">Bebida</h3>
+                            <p class="item-group-note">Opcional · desconto ao combinar</p>
+                        </div>
+                    </div>
+                    <div class="item-choices">
+                        @foreach (var item in Drinks)
+                        {
+                            <button class="item-choice @(SelectedDrink == item.Code ? "item-choice--selected" : "")"
+                                    @onclick="() => ToggleDrink(item.Code)"
+                                    type="button">
+                                <div class="item-choice-body">
+                                    <span class="item-choice-name">@item.Name</span>
+                                    <span class="item-choice-price">R$ @item.Price.ToString("F2")</span>
+                                </div>
+                                <div class="item-choice-check">
+                                    @if (SelectedDrink == item.Code)
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    }
+                                </div>
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (SelectedSandwich is not null)
+        {
+            <div class="slide-preview">
+                <div class="preview-row">
+                    <span class="preview-label">Subtotal</span>
+                    <span class="preview-value">R$ @PreviewSubtotal.ToString("F2")</span>
+                </div>
+                @if (PreviewDiscountRate > 0)
+                {
+                    <div class="preview-row preview-row--discount">
+                        <span class="preview-label">
+                            Desconto
+                            <span class="discount-badge">@((PreviewDiscountRate * 100).ToString("F0"))% OFF</span>
+                        </span>
+                        <span class="preview-value preview-value--green">− R$ @PreviewDiscount.ToString("F2")</span>
+                    </div>
+                }
+                <div class="preview-row preview-row--total">
+                    <span class="preview-label">Total</span>
+                    <span class="preview-value preview-value--total">R$ @PreviewTotal.ToString("F2")</span>
+                </div>
+            </div>
+        }
+
+        <div class="slide-footer">
+            <button class="btn btn-ghost flex-1" @onclick="Close" disabled="@_submitting">
+                Cancelar
+            </button>
+            <button class="btn btn-primary flex-2" @onclick="Submit" disabled="@(_submitting || SelectedSandwich is null)">
+                @if (_submitting)
+                {
+                    <span class="spinner spinner--sm spinner--light"></span>
+                    <span>Salvando...</span>
+                }
+                else
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>@(_editingId.HasValue ? "Salvar alterações" : "Confirmar pedido")</span>
+                }
+            </button>
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<OrderDto> OnSaved { get; set; }
+
+    private bool _isOpen;
+    private bool _submitting;
+    private string? _error;
+    private Guid? _editingId;
+
+    private List<MenuItemDto> _menuItems = [];
+
+    private IEnumerable<MenuItemDto> Sandwiches => _menuItems.Where(i => i.Category == "Sandwich");
+    private IEnumerable<MenuItemDto> Sides      => _menuItems.Where(i => i.Category == "Side");
+    private IEnumerable<MenuItemDto> Drinks     => _menuItems.Where(i => i.Category == "Drink");
+
+    private string? SelectedSandwich;
+    private string? SelectedSide;
+    private string? SelectedDrink;
+
+    private decimal PreviewSubtotal
+    {
+        get
+        {
+            var total = 0m;
+            if (SelectedSandwich is not null)
+                total += _menuItems.FirstOrDefault(i => i.Code == SelectedSandwich)?.Price ?? 0;
+            if (SelectedSide is not null)
+                total += _menuItems.FirstOrDefault(i => i.Code == SelectedSide)?.Price ?? 0;
+            if (SelectedDrink is not null)
+                total += _menuItems.FirstOrDefault(i => i.Code == SelectedDrink)?.Price ?? 0;
+            return Math.Round(total, 2, MidpointRounding.AwayFromZero);
+        }
+    }
+
+    private decimal PreviewDiscountRate =>
+        (SelectedSandwich is not null && SelectedSide is not null && SelectedDrink is not null) ? 0.20m :
+        (SelectedSandwich is not null && SelectedDrink is not null)                             ? 0.15m :
+        (SelectedSandwich is not null && SelectedSide is not null)                              ? 0.10m :
+        0m;
+
+    private decimal PreviewDiscount => Math.Round(PreviewSubtotal * PreviewDiscountRate, 2, MidpointRounding.AwayFromZero);
+    private decimal PreviewTotal    => Math.Round(PreviewSubtotal - PreviewDiscount, 2, MidpointRounding.AwayFromZero);
+
+    public async Task OpenForCreateAsync(string? itemCode = null)
+    {
+        _editingId = null;
+        SelectedSandwich = SelectedSide = SelectedDrink = null;
+        _error = null;
+        _isOpen = true;
+        
+        await LoadMenuIfNeededAsync();
+
+        if (!string.IsNullOrEmpty(itemCode))
+        {
+            var item = _menuItems.FirstOrDefault(i => i.Code.Equals(itemCode, StringComparison.OrdinalIgnoreCase));
+            if (item != null)
+            {
+                if (item.Category == "Sandwich") SelectedSandwich = item.Code;
+                else if (item.Category == "Side") SelectedSide = item.Code;
+                else if (item.Category == "Drink") SelectedDrink = item.Code;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    public async Task OpenForEditAsync(OrderDto order)
+    {
+        _editingId = order.Id;
+        SelectedSandwich = order.Items.FirstOrDefault(i => i.Category == "Sandwich")?.Code;
+        SelectedSide     = order.Items.FirstOrDefault(i => i.Category == "Side")?.Code;
+        SelectedDrink    = order.Items.FirstOrDefault(i => i.Category == "Drink")?.Code;
+        _error = null;
+        _isOpen = true;
+        await LoadMenuIfNeededAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMenuIfNeededAsync()
+    {
+        if (_menuItems.Count == 0)
+            _menuItems = await Api.GetMenuAsync();
+    }
+
+    private void SelectSandwich(string code) => SelectedSandwich = (SelectedSandwich == code) ? null : code;
+    private void ToggleSide(string code)     => SelectedSide     = (SelectedSide     == code) ? null : code;
+    private void ToggleDrink(string code)    => SelectedDrink    = (SelectedDrink    == code) ? null : code;
+
+    private async Task Submit()
+    {
+        if (SelectedSandwich is null) return;
+        _submitting = true;
+        _error = null;
+
+        var codes = new List<string> { SelectedSandwich };
+        if (SelectedSide   is not null) codes.Add(SelectedSide);
+        if (SelectedDrink  is not null) codes.Add(SelectedDrink);
+
+        ApiResult<OrderDto> result;
+
+        if (_editingId.HasValue)
+            result = await Api.UpdateOrderAsync(_editingId.Value, codes);
+        else
+            result = await Api.CreateOrderAsync(codes);
+
+        _submitting = false;
+
+        if (result.IsSuccess)
+        {
+            _isOpen = false;
+            await OnSaved.InvokeAsync(result.Value!);
+        }
+        else
+        {
+            _error = result.Error;
+        }
+
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        _isOpen = false;
+        _error = null;
+        StateHasChanged();
+    }
+}

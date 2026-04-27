@@ -1,0 +1,418 @@
+@page "/pedidos"
+@rendermode InteractiveServer
+@inject GoodHamburgerApiClient Api
+@inject ToastService Toast
+@inject NavigationManager Nav
+@inject AuthService Auth
+
+<PageTitle>Pedidos — Good Hamburger</PageTitle>
+
+@if (!_authChecked)
+{
+    <div class="page-container">
+        <div class="empty-state">
+            <span class="empty-emoji">⏳</span>
+            <h3>Verificando sessão...</h3>
+        </div>
+    </div>
+}
+else if (!_isAuthenticated)
+{
+    <div class="page-container">
+        <div class="empty-state">
+            <span class="empty-emoji">🔒</span>
+            <h3>Acesso restrito</h3>
+            <p>Faça login para gerenciar seus pedidos.</p>
+            <div class="empty-actions">
+                <a href="/login" class="btn btn-primary">Entrar</a>
+                <a href="/register" class="btn btn-outline">Criar conta</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
+<!-- Form modal & confirm dialog -->
+<OrderFormModal @ref="_formModal" OnSaved="HandleSaved" />
+<ConfirmDialog @ref="_confirmDialog" />
+
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <p class="page-eyebrow">Acompanhamento</p>
+            <h1 class="page-title">Meus Pedidos</h1>
+        </div>
+        <button class="btn btn-primary" @onclick="() => OpenCreateAsync()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Pedido
+        </button>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stats-item">
+            <span class="stats-value">@_summaryOrders.Count</span>
+            <span class="stats-label">Total de pedidos</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+            <span class="stats-value">@_summaryOrders.Count(o => o.DiscountRate > 0)</span>
+            <span class="stats-label">Com desconto</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+            <span class="stats-value">R$ @_summaryOrders.Sum(o => o.Total).ToString("F2")</span>
+            <span class="stats-label">Receita total</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+            <span class="stats-value">R$ @_summaryOrders.Sum(o => o.Discount).ToString("F2")</span>
+            <span class="stats-label">Total em descontos</span>
+        </div>
+    </div>
+
+    <div class="table-toolbar">
+        <div class="search-group">
+            <div class="search-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="search-input" placeholder="Buscar por ID ou item..." 
+                       @bind="_searchTerm" 
+                       @onkeyup='(e) => { if (e.Key == "Enter") LoadOrdersAsync(); }' />
+            </div>
+            <button class="btn" @onclick="LoadOrdersAsync">Buscar</button>
+        </div>
+        <div class="filter-pills">
+            <button class="filter-pill @(_filter == "all" ? "filter-pill--active" : "")" @onclick='() => _filter = "all"'>Todos</button>
+            <button class="filter-pill @(_filter == "discount" ? "filter-pill--active" : "")" @onclick='() => _filter = "discount"'>Com desconto</button>
+            <button class="filter-pill @(_filter == "today" ? "filter-pill--active" : "")" @onclick='() => _filter = "today"'>Hoje</button>
+        </div>
+        <button class="icon-btn icon-btn--subtle" @onclick="LoadOrdersAsync" title="Atualizar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+    </div>
+
+    <!-- Loading -->
+    @if (_loading)
+    {
+        <div class="table-wrap">
+            @for (int i = 0; i < 5; i++)
+            {
+                <div class="skeleton-row"></div>
+            }
+        </div>
+    }
+    else if (_orders.Count == 0)
+    {
+        @* Empty state *@
+        <div class="empty-state">
+            <span class="empty-emoji">📦</span>
+            <h3>Nenhum pedido ainda</h3>
+            <p>Faça o primeiro pedido e ele aparecerá aqui.</p>
+            <button class="btn btn-primary" @onclick="() => OpenCreateAsync()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Criar Primeiro Pedido
+            </button>
+        </div>
+    }
+    else if (FilteredOrders.Count == 0)
+    {
+        @* No results after filter *@
+        <div class="empty-state">
+            <span class="empty-emoji">🔍</span>
+            <h3>Sem resultados</h3>
+            <p>Nenhum pedido corresponde ao filtro aplicado.</p>
+            <button class="btn btn-ghost" @onclick='() => { _searchTerm = ""; _filter = "all"; }'>Limpar filtros</button>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID do Pedido</th>
+                        <th>Itens</th>
+                        <th class="text-right">Subtotal</th>
+                        <th class="text-center">Desconto</th>
+                        <th class="text-right">Total</th>
+                        <th class="text-center">Data</th>
+                        <th class="text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in FilteredOrders)
+                    {
+                        <tr class="data-row @(_expandedId == order.Id ? "data-row--expanded" : "")"
+                            @onclick="() => ToggleExpand(order.Id)">
+                            <td>
+                                <span class="order-id-mono">@order.Id.ToString()[..8]…</span>
+                            </td>
+                            <td>
+                                <div class="order-items-pills">
+                                    @foreach (var item in order.Items)
+                                    {
+                                        <span class="item-pill item-pill--@item.Category.ToLower()">
+                                            @GetEmoji(item.Category) @item.Name
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="text-right text-muted">R$ @order.Subtotal.ToString("F2")</td>
+                            <td class="text-center">
+                                @if (order.DiscountRate > 0)
+                                {
+                                    <span class="badge badge-success">@((order.DiscountRate * 100).ToString("F0"))% OFF</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted text-sm">—</span>
+                                }
+                            </td>
+                            <td class="text-right font-semibold">R$ @order.Total.ToString("F2")</td>
+                            <td class="text-center text-muted text-sm">@order.CreatedAt.LocalDateTime.ToString("dd/MM HH:mm")</td>
+                            <td class="text-right" @onclick:stopPropagation="true">
+                                <div class="action-btns">
+                                    <button class="icon-btn icon-btn--edit" @onclick="() => OpenEditAsync(order)" title="Editar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </button>
+                                    <button class="icon-btn icon-btn--delete" @onclick="() => DeleteOrderAsync(order)" title="Remover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Expanded row detail -->
+                        @if (_expandedId == order.Id)
+                        {
+                            <tr class="expand-row">
+                                <td colspan="7">
+                                    <div class="expand-content">
+                                        <div class="expand-detail">
+                                            <span class="expand-label">ID completo</span>
+                                            <code class="expand-value">@order.Id</code>
+                                        </div>
+                                        <div class="expand-detail">
+                                            <span class="expand-label">Criado em</span>
+                                            <span class="expand-value">@order.CreatedAt.LocalDateTime.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                        </div>
+                                        <div class="expand-detail">
+                                            <span class="expand-label">Atualizado em</span>
+                                            <span class="expand-value">@order.UpdatedAt.LocalDateTime.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                        </div>
+                                        <div class="expand-detail">
+                                            <span class="expand-label">Cálculo</span>
+                                            <span class="expand-value">
+                                                R$ @order.Subtotal.ToString("F2") − R$ @order.Discount.ToString("F2") = <strong>R$ @order.Total.ToString("F2")</strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="order-cards">
+            @foreach (var order in FilteredOrders)
+            {
+                <div class="order-card-mobile @(_expandedId == order.Id ? "order-card-mobile--expanded" : "")" @onclick="() => ToggleExpand(order.Id)">
+                    <div class="order-card-top">
+                        <span class="order-id-mono">#@order.Id.ToString()[..8]</span>
+                        @if (order.DiscountRate > 0)
+                        {
+                            <span class="badge badge-success">@((order.DiscountRate * 100).ToString("F0"))% OFF</span>
+                        }
+                        <span class="order-card-total">R$ @order.Total.ToString("F2")</span>
+                    </div>
+                    <div class="order-items-pills">
+                        @foreach (var item in order.Items)
+                        {
+                            <span class="item-pill item-pill--@item.Category.ToLower()">@GetEmoji(item.Category) @item.Name</span>
+                        }
+                    </div>
+                    
+                    @if (_expandedId == order.Id)
+                    {
+                        <div class="order-card-detail-mobile">
+                            <div class="expand-detail">
+                                <span class="expand-label">ID completo</span>
+                                <code class="expand-value">@order.Id</code>
+                            </div>
+                            <div class="expand-detail">
+                                <span class="expand-label">Cálculo</span>
+                                <span class="expand-value">R$ @order.Subtotal.ToString("F2") − R$ @order.Discount.ToString("F2") = <strong>R$ @order.Total.ToString("F2")</strong></span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="order-card-actions">
+                        <span class="text-muted text-sm">@order.CreatedAt.LocalDateTime.ToString("dd/MM HH:mm")</span>
+                        <div class="action-btns" @onclick:stopPropagation="true">
+                            <button class="icon-btn icon-btn--edit" @onclick="() => OpenEditAsync(order)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <button class="icon-btn icon-btn--delete" @onclick="() => DeleteOrderAsync(order)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+}
+
+@code {
+    private OrderFormModal? _formModal;
+    private ConfirmDialog?  _confirmDialog;
+
+    private List<OrderDto> _orders = [];
+    private List<OrderDto> _summaryOrders = [];
+    private bool   _loading = true;
+    private string _searchTerm = "";
+    private string _filter = "all";
+    private Guid?  _expandedId;
+    private bool   _authChecked;
+    private bool   _isAuthenticated;
+
+    private List<OrderDto> FilteredOrders
+    {
+        get
+        {
+            var q = _orders.AsEnumerable();
+
+            q = _filter switch
+            {
+                "discount" => q.Where(o => o.DiscountRate > 0),
+                "today"    => q.Where(o => o.CreatedAt.LocalDateTime.Date == DateTime.Today),
+                _          => q
+            };
+
+            return q.ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isAuthenticated = Auth.IsAuthenticated();
+        _authChecked = true;
+
+        if (_isAuthenticated)
+        {
+            await LoadOrdersAsync();
+
+            // Auto-open form if ?new=true in URL
+            var uri = Nav.ToAbsoluteUri(Nav.Uri);
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+            
+            if (query.TryGetValue("new", out var newVal) && newVal == "true")
+            {
+                query.TryGetValue("item", out var itemCode);
+                await OpenCreateAsync(itemCode);
+            }
+        }
+    }
+
+    private async Task LoadOrdersAsync()
+    {
+        try
+        {
+            _loading = true;
+            _orders  = await Api.GetOrdersAsync(_searchTerm);
+            
+            // If it's a search, we keep the summary orders as they are (all orders)
+            // If it's the first load or refresh, we update the summary too
+            if (string.IsNullOrWhiteSpace(_searchTerm) || _summaryOrders.Count == 0)
+            {
+                _summaryOrders = _orders.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+            Toast.Error("Não foi possível carregar os pedidos. Tente novamente.");
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenCreateAsync(string? itemCode = null)
+    {
+        if (_formModal is not null)
+            await _formModal.OpenForCreateAsync(itemCode);
+    }
+
+    private async Task OpenEditAsync(OrderDto order)
+    {
+        if (_formModal is not null)
+            await _formModal.OpenForEditAsync(order);
+    }
+
+    private async Task DeleteOrderAsync(OrderDto order)
+    {
+        if (_confirmDialog is null) return;
+
+        var confirmed = await _confirmDialog.ShowAsync(
+            title: "Remover pedido",
+            message: $"Tem certeza que deseja remover o pedido #{order.Id.ToString()[..8]}? Esta ação não pode ser desfeita.",
+            confirmText: "Remover",
+            confirmClass: "btn-danger",
+            icon: "🗑️",
+            iconClass: "danger");
+
+        if (!confirmed) return;
+
+        var result = await Api.DeleteOrderAsync(order.Id);
+        if (result.IsSuccess)
+        {
+            _orders.Remove(order);
+            _summaryOrders.RemoveAll(o => o.Id == order.Id);
+            Toast.Success("Pedido removido com sucesso.");
+        }
+        else
+        {
+            Toast.Error(result.Error ?? "Erro ao remover pedido.");
+        }
+    }
+
+    private async Task HandleSaved(OrderDto saved)
+    {
+        var idx = _orders.FindIndex(o => o.Id == saved.Id);
+        if (idx >= 0)
+        {
+            _orders[idx] = saved;
+            var sIdx = _summaryOrders.FindIndex(o => o.Id == saved.Id);
+            if (sIdx >= 0) _summaryOrders[sIdx] = saved;
+            
+            Toast.Success("Pedido atualizado! R$ " + saved.Total.ToString("F2"));
+        }
+        else
+        {
+            _orders.Insert(0, saved);
+            _summaryOrders.Insert(0, saved);
+            Toast.Success("Pedido criado! Total: R$ " + saved.Total.ToString("F2"));
+        }
+    }
+
+    private void ToggleExpand(Guid id)
+        => _expandedId = (_expandedId == id) ? null : id;
+
+    private static string GetEmoji(string category) => category switch
+    {
+        "Sandwich" => "🍔",
+        "Side"     => "🍟",
+        "Drink"    => "🥤",
+        _          => "🍽️"
+    };
+}

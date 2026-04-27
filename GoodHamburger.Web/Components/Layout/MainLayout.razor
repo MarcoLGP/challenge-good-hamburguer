@@ -1,0 +1,17 @@
+@inherits LayoutComponentBase
+@inject ToastService Toast
+
+<div class="app-shell">
+    <NavMenu />
+    <main class="main-content" id="main-content">
+        @Body
+    </main>
+    <footer class="app-footer">
+        <div class="footer-inner">
+            <span class="footer-brand">🍔 Good Hamburger</span>
+            <span class="footer-copy">&copy; @DateTime.Now.Year Good Hamburger. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+</div>
+
+<ToastContainer />

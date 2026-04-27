@@ -1,0 +1,106 @@
+@page "/login"
+@rendermode InteractiveServer
+@inject AuthService Auth
+@inject NavigationManager Nav
+@inject ToastService Toast
+
+<PageTitle>Entrar — Good Hamburger</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-bg" aria-hidden="true">
+        <div class="auth-glow auth-glow--1"></div>
+        <div class="auth-glow auth-glow--2"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-brand">
+            <div class="brand-logo brand-logo--lg">
+                <span>🍔</span>
+            </div>
+            <h1 class="auth-brand-title">Good <span class="brand-name--accent">Hamburger</span></h1>
+            <p class="auth-brand-sub">Sistema de Pedidos Artesanais</p>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-card-header">
+                <h2 class="auth-card-title">Bem-vindo de volta</h2>
+                <p class="auth-card-sub">Entre com sua conta para gerenciar pedidos</p>
+            </div>
+
+            <EditForm Model="_model" OnValidSubmit="HandleSubmitAsync">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <InputText @bind-Value="_model.Email" type="email" class="form-input" placeholder="seu@email.com" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Senha</label>
+                    <InputText @bind-Value="_model.Password" type="password" class="form-input" placeholder="••••••" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="form-error">@_error</div>
+                }
+
+                <button type="submit" class="btn btn-primary btn-lg w-full" disabled="@_loading">
+                    @if (_loading)
+                    {
+                        <span class="spinner spinner--light spinner--sm"></span>
+                        <span>Entrando...</span>
+                    }
+                    else
+                    {
+                        <span>Entrar</span>
+                    }
+                </button>
+            </EditForm>
+
+            <div class="auth-divider">
+                <span>ou</span>
+            </div>
+
+            <div class="auth-footer">
+                <span>Ainda não tem conta?</span>
+                <a href="/register" class="auth-link">Criar conta</a>
+            </div>
+        </div>
+
+        <a href="/" class="auth-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar ao início
+        </a>
+    </div>
+</div>
+
+@code {
+    private LoginModel _model = new();
+    private bool _loading;
+    private string? _error;
+
+    private async Task HandleSubmitAsync()
+    {
+        _loading = true;
+        _error = null;
+
+        var success = await Auth.LoginAsync(_model.Email, _model.Password);
+
+        if (success)
+        {
+            await Task.Delay(1500);
+            Nav.NavigateTo("/pedidos", forceLoad: true);
+        }
+        else
+        {
+            _loading = false;
+        }
+    }
+
+    public sealed class LoginModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

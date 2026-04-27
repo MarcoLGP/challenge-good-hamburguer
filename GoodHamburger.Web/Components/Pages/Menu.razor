@@ -1,0 +1,136 @@
+@page "/cardapio"
+@rendermode InteractiveServer
+@inject GoodHamburgerApiClient Api
+@inject NavigationManager Nav
+
+<PageTitle>Cardápio — Good Hamburger</PageTitle>
+
+<div class="page-container">
+
+    <!-- Page header -->
+    <div class="page-header page-header--centered">
+        <p class="page-eyebrow">Good Hamburger</p>
+        <h1 class="page-title">Nosso Cardápio</h1>
+        <p class="page-subtitle">
+            Ingredientes selecionados, preparação artesanal e descontos automáticos para combos.
+        </p>
+    </div>
+
+    <!-- Category filter tabs -->
+    <div class="filter-tabs">
+        <button class="filter-tab @(_activeCategory == "all" ? "filter-tab--active" : "")"
+                @onclick='() => SetCategory("all")'>
+            <span>Todos</span>
+            <span class="tab-count">@_menuItems.Count</span>
+        </button>
+        <button class="filter-tab @(_activeCategory == "Sandwich" ? "filter-tab--active" : "")"
+                @onclick='() => SetCategory("Sandwich")'>
+            <span>🍔 Sanduíches</span>
+            <span class="tab-count">@_menuItems.Count(i => i.Category == "Sandwich")</span>
+        </button>
+        <button class="filter-tab @(_activeCategory == "Side" ? "filter-tab--active" : "")"
+                @onclick='() => SetCategory("Side")'>
+            <span>🍟 Acompanhamentos</span>
+            <span class="tab-count">@_menuItems.Count(i => i.Category == "Side")</span>
+        </button>
+        <button class="filter-tab @(_activeCategory == "Drink" ? "filter-tab--active" : "")"
+                @onclick='() => SetCategory("Drink")'>
+            <span>🥤 Bebidas</span>
+            <span class="tab-count">@_menuItems.Count(i => i.Category == "Drink")</span>
+        </button>
+    </div>
+
+    <!-- Loading state -->
+    @if (_loading)
+    {
+        <div class="menu-grid">
+            @for (int i = 0; i < 6; i++)
+            {
+                <div class="skeleton-card skeleton-card--tall"></div>
+            }
+        </div>
+    }
+    else if (_menuItems.Count == 0)
+    {
+        <div class="empty-state">
+            <span class="empty-emoji">🍽️</span>
+            <h3>Cardápio indisponível</h3>
+            <p>Não foi possível carregar o cardápio. Verifique a conexão com a API.</p>
+            <button class="btn btn-primary" @onclick="LoadMenuAsync">Tentar novamente</button>
+        </div>
+    }
+    else
+    {
+        <div class="menu-grid">
+            @foreach (var item in FilteredItems)
+            {
+                <div class="menu-card">
+                    <div class="menu-card-visual">
+                        <span class="menu-card-emoji">@GetEmoji(item.Category)</span>
+                        <div class="menu-card-glow"></div>
+                    </div>
+                    <div class="menu-card-body">
+                        <span class="menu-card-cat">@GetCategoryLabel(item.Category)</span>
+                        <h3 class="menu-card-name">@item.Name</h3>
+                        <p class="menu-card-code">código: <code>@item.Code</code></p>
+                    </div>
+                    <div class="menu-card-footer">
+                        <span class="menu-card-price">R$ @item.Price.ToString("F2")</span>
+                        <a href="/pedidos?new=true&item=@item.Code" class="btn btn-primary btn-sm">Pedir</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Combos hint -->
+    <div class="combos-hint">
+        <div class="combos-hint-icon">💡</div>
+        <div class="combos-hint-text">
+            <strong>Economize com combos!</strong>
+            Combine um sanduíche com batata frita <strong>(10% off)</strong>,
+            com refrigerante <strong>(15% off)</strong> ou os três juntos <strong>(20% off)</strong>.
+        </div>
+        <a href="/pedidos?new=true" class="btn btn-primary btn-sm">Montar combo</a>
+    </div>
+
+</div>
+
+@code {
+    private List<MenuItemDto> _menuItems = [];
+    private string _activeCategory = "all";
+    private bool _loading = true;
+
+    private IEnumerable<MenuItemDto> FilteredItems =>
+        _activeCategory == "all"
+            ? _menuItems
+            : _menuItems.Where(i => i.Category == _activeCategory);
+
+    protected override async Task OnInitializedAsync()
+        => await LoadMenuAsync();
+
+    private async Task LoadMenuAsync()
+    {
+        _loading = true;
+        _menuItems = await Api.GetMenuAsync();
+        _loading = false;
+    }
+
+    private void SetCategory(string cat) => _activeCategory = cat;
+
+    private static string GetEmoji(string category) => category switch
+    {
+        "Sandwich" => "🍔",
+        "Side"     => "🍟",
+        "Drink"    => "🥤",
+        _          => "🍽️"
+    };
+
+    private static string GetCategoryLabel(string category) => category switch
+    {
+        "Sandwich" => "Sanduíche",
+        "Side"     => "Acompanhamento",
+        "Drink"    => "Bebida",
+        _          => category
+    };
+}

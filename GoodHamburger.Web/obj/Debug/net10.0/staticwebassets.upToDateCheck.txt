@@ -1,0 +1,8 @@
+wwwroot\css\app.css
+wwwroot\js\app.js
+C:\Users\marco\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.6\build\..\_framework\blazor.web.js
+C:\Users\marco\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.6\build\..\_framework\blazor.server.js
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\wwwroot\css\app.css
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\wwwroot\js\app.js
+C:\Users\marco\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.6\_framework\blazor.server.js
+C:\Users\marco\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.6\_framework\blazor.web.js

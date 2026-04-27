@@ -1,0 +1,57 @@
+@rendermode InteractiveServer
+@inject ToastService Toast
+@implements IDisposable
+
+<div class="toast-container" aria-live="polite" aria-atomic="false">
+    @foreach (var toast in Toast.Toasts)
+    {
+        <div class="toast toast--@toast.Type.ToString().ToLower() @(_dismissing.Contains(toast.Id) ? "toast--dismissing" : "")"
+             role="alert">
+            <span class="toast-icon">@GetIcon(toast.Type)</span>
+            <span class="toast-message">@toast.Message</span>
+            <button type="button" class="toast-close" @onclick="() => Dismiss(toast.Id)" @onclick:stopPropagation="true" aria-label="Fechar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly HashSet<string> _dismissing = [];
+
+    protected override void OnInitialized()
+    {
+        Toast.OnChanged += HandleChange;
+    }
+
+    private void HandleChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Dismiss(string id)
+    {
+        if (_dismissing.Contains(id))
+            return;
+
+        _dismissing.Add(id);
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300);
+        Toast.Dismiss(id);
+        _dismissing.Remove(id);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private static string GetIcon(ToastType type) => type switch
+    {
+        ToastType.Success => "✓",
+        ToastType.Error   => "✕",
+        ToastType.Warning => "⚠",
+        _                 => "ℹ"
+    };
+
+    public void Dispose()
+    {
+        Toast.OnChanged -= HandleChange;
+    }
+}
