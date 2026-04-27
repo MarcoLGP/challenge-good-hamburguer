@@ -34,3 +34,4 @@ C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\obj\Debug\net10.0\
 C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\obj\Debug\net10.0\ref\GoodHamburger.Web.dll
 C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\obj\Debug\net10.0\compressed\u3a3oiogrn-{0}-vkbzl8pmel-vkbzl8pmel.gz
 C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\obj\Debug\net10.0\compressed\mxqcrhdri7-{0}-r25do7joco-r25do7joco.gz
+C:\Users\marco\source\repos\Good Hamburguer\GoodHamburger.Web\obj\Debug\net10.0\GoodHamburger.Web.sourcelink.json
